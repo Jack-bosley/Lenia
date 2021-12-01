@@ -25,6 +25,7 @@ namespace Lenia.Presentation
 
             RenderFrame += Update;
             UpdateFrame += FixedUpdate;
+
         }
 
 
@@ -36,6 +37,7 @@ namespace Lenia.Presentation
             GL.Enable(EnableCap.Texture2D);
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
 
+            app.SourceDirectory = @"D:\Code\C_Sharp\Repos\Lenia";
             app.Start();
         }
 

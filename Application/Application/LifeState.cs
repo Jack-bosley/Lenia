@@ -8,7 +8,7 @@ namespace Lenia.Application
 {
     public class LifeState
     {
-        public Texture lifeTexture;
+        public Frame frameBuffer;
 
 
         public LifeState GetNextState()

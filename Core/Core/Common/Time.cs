@@ -15,12 +15,16 @@ namespace Lenia.Core.Common
         private long LastUpdateTick { get; set; }
         private long LastFixedUpdateTick {get; set; }
 
+        public DateTime StartTime { get; private set; }
+
         public void Start()
         {
+            StartTime = DateTime.Now;
+
             DeltaTicks = 0;
             FixedDeltaTicks = 0;
-            LastUpdateTick = DateTime.Now.Ticks;
-            LastFixedUpdateTick = DateTime.Now.Ticks;
+            LastUpdateTick = StartTime.Ticks;
+            LastFixedUpdateTick = StartTime.Ticks;
         }
 
         public void Update()

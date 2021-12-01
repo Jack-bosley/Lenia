@@ -14,7 +14,6 @@ using Lenia.Core.Common;
 
 namespace Lenia.Core.Rendering
 {
-    [Serializable]
     public class Texture : IDisposable
     {
         #region Private members
@@ -70,6 +69,7 @@ namespace Lenia.Core.Rendering
             set => colours = value;
         }
 
+        public int Channels { get; set; }
 
         #endregion
 
@@ -89,12 +89,16 @@ namespace Lenia.Core.Rendering
         /// <summary>
         /// Pushes Vertices and Indices to the GPU
         /// </summary>
-        public void Update()
+        public void Update(bool bufferEmpty = false)
         {
             if (isBufferValid)
                 return;
 
-            BufferData();
+            if (bufferEmpty)
+                BufferEmptyData();
+            else
+                BufferData();
+            
             isBufferValid = true;
         }
 
@@ -110,7 +114,7 @@ namespace Lenia.Core.Rendering
                 throw new WarningException("Texture data is likely expired");
 
             GL.ActiveTexture(unit);
-            GL.BindTexture(TextureTarget.Texture2D, textureId);
+            GL.BindTexture(TextureTarget.Texture2D, this);
 
             OpenTKException.ThrowIfErrors();
         }
@@ -131,6 +135,8 @@ namespace Lenia.Core.Rendering
                 byte* src = (byte*)data.Scan0;
 
                 int bitStep = data.Stride / Width;
+                Channels = bitStep;
+
                 switch (bitStep)
                 {
                     case 4:
@@ -184,6 +190,54 @@ namespace Lenia.Core.Rendering
             bitmap.Dispose();
         }
 
+        public void LoadTexture(int width, int height, int channels = 4)
+        {
+            Width = width;
+            Height = height;
+            Channels = channels;
+
+            unsafe
+            {
+                Colours = new Colour[Width * Height];
+
+                switch (channels)
+                {
+                    case 4:
+                        for (int x = 0; x < Width; x++)
+                        {
+                            for (int y = 0; y < Height; y++)
+                                colours[x + (Width * y)] = new Colour(0, 0, 0, 0);
+                        }
+                        break;
+
+                    case 3:
+                        for (int x = 0; x < Width; x++)
+                        {
+                            for (int y = 0; y < Height; y++)
+                                colours[x + (Width * y)] = new Colour(0, 0, 0, 0);
+                        }
+                        break;
+
+                    case 2:
+                        for (int x = 0; x < Width; x++)
+                        {
+                            for (int y = 0; y < Height; y++)
+                                colours[x + (Width * y)] = new Colour(0, 0, 0, 0);
+                        }
+                        break;
+
+                    case 1:
+                        for (int x = 0; x < Width; x++)
+                        {
+                            for (int y = 0; y < Height; y++)
+                                colours[x + (Width * y)] = new Colour(0, 0, 0, 0);
+                        }
+                        break;
+
+                }
+            }
+        }
+
         public void SetParameter(TextureParameterName parameterName, TextureWrapMode wrapMode)
         {
             textureParameters[parameterName] = (int)wrapMode;
@@ -217,7 +271,24 @@ namespace Lenia.Core.Rendering
         {
             GL.Enable(EnableCap.Texture2D);
             GL.BindTexture(TextureTarget.Texture2D, textureId);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, Colours);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, Colours);
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            foreach (TextureParameterName parameter in textureParameters.Keys)
+                GL.TexParameter(TextureTarget.Texture2D, parameter, textureParameters[parameter]);
+
+            OpenTKException.ThrowIfErrors();
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            isDataBuffered = true;
+        }
+
+        protected void BufferEmptyData()
+        {
+            GL.Enable(EnableCap.Texture2D);
+            GL.BindTexture(TextureTarget.Texture2D, textureId);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             foreach (TextureParameterName parameter in textureParameters.Keys)

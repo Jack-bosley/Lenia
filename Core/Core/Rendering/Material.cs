@@ -11,7 +11,6 @@ using Lenia.Core.Common;
 
 namespace Lenia.Core.Rendering
 {
-    [Serializable]
     public class Material : IDisposable
     {
         private static readonly Material defaultMaterial;

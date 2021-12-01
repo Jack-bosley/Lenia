@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenTK" Version="4.6.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Core">
       <HintPath>..\..\Assemblies\netcoreapp3.1\Core.dll</HintPath>
     </Reference>

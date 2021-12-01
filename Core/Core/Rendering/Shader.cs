@@ -11,7 +11,6 @@ using Lenia.Core.Common;
 
 namespace Lenia.Core.Rendering
 {
-    [Serializable]
     public class Shader : IDisposable
     {
         private static readonly Shader defaultShader;
@@ -145,9 +144,12 @@ void main()
             if (!isCompiled)
                 throw new InvalidOperationException("Shader must be compiled before use");
 
-            GL.UseProgram(shaderProgram);
+            GL.UseProgram(this);
 
             OpenTKException.ThrowIfErrors();
         }
+
+
+        public static implicit operator int(Shader shader) => shader.shaderProgram;
     }
 }
