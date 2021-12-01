@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Lenia.Application</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>../../Assemblies/</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Core">
+      <HintPath>..\..\Assemblies\netcoreapp3.1\Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
